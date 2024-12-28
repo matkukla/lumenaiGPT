@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from core import generate_response
 from prompts import SYSTEM_PROMPT, FEW_SHOT_EXAMPLES
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "lumen-ai.lovable.app"}})
+
 
 @app.route("/lumenai", methods=["POST"])
 def lumenai():
@@ -27,4 +30,4 @@ def examples():
     return jsonify({"examples": FEW_SHOT_EXAMPLES.split("\n")})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
