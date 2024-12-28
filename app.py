@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "lumen-ai.lovable.app"}})
 
 
-@app.route("/lumenai", methods=["POST"])
+@app.route("api/lumenai", methods=["POST"])
 def lumenai():
     """
     Endpoint for handling user queries to LumenAI.
