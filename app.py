@@ -4,7 +4,12 @@ from core import generate_response
 from prompts import SYSTEM_PROMPT, FEW_SHOT_EXAMPLES
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "lumen-ai.lovable.app"}})
+#CORS(app, resources={r"/api/*": {"origins": "https://lumen-ai.lovable.app"}})
+CORS(app, resources={r"/api/*": {
+    "origins": "https://lumen-ai.lovable.app",
+    "methods": ["POST", "OPTIONS"],
+    "allow_headers": ["Content-Type"]
+}})
 
 
 @app.route("/api/lumenai", methods=["POST"])
@@ -12,6 +17,14 @@ def lumenai():
     """
     Endpoint for handling user queries to LumenAI.
     """
+    if request.method == "OPTIONS":
+        # Respond to preflight request
+        response = jsonify({"message": "Preflight request accepted"})
+        response.headers.add("Access-Control-Allow-Origin", "https://lumen-ai.lovable.app")
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+        return response
+    
     data = request.json
     user_input = data.get("input", "")
 
