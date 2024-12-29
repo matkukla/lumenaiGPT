@@ -32,8 +32,10 @@ def lumenai():
         return jsonify({"error": "Input is required"}), 400
 
     # Generate response
-    response = generate_response(SYSTEM_PROMPT, user_input, FEW_SHOT_EXAMPLES)
-    return jsonify({"response": response})
+    bot_response = generate_response(SYSTEM_PROMPT, user_input, FEW_SHOT_EXAMPLES)
+    response = jsonify({"response": bot_response})
+    response.headers.add("Access-Control-Allow-Origin", "https://lumen-ai.lovable.app")
+    return response
 
 @app.route("/examples", methods=["GET"])
 def examples():
