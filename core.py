@@ -19,7 +19,7 @@ def generate_response(system_prompt, user_input, examples=None, model="gpt-4o-mi
     # Call OpenAI API
     response = client.chat.completions.create(model=model,
     messages=messages,
-    max_tokens=150,
+    max_tokens=1000,
     temperature=0.7)
 
     return response.choices[0].message.content.strip()
