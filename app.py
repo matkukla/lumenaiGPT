@@ -4,8 +4,14 @@ from core import generate_response
 from prompts import SYSTEM_PROMPT, FEW_SHOT_EXAMPLES
 
 app = Flask(__name__)
+# List of allowed origins
+ALLOWED_ORIGINS = [
+    "https://lumen-ai.lovable.app",
+    "https://8c6b1832-9804-49a9-9a07-fa7a0fb29fa6.lovableproject.com"
+]
+
 CORS(app, resources={r"/api/*": {
-    "origins": ["https://lumen-ai.lovable.app","https://8c6b1832-9804-49a9-9a07-fa7a0fb29fa6.lovableproject.com"],
+    "origins": ALLOWED_ORIGINS,
     "methods": ["POST", "OPTIONS"],
     "allow_headers": ["Content-Type"]
 }})
@@ -16,9 +22,8 @@ def add_cors_headers(response):
     Dynamically add CORS headers to the response.
     """
     origin = request.headers.get("Origin")
-    allowed_origins = ["https://lumen-ai.lovable.app", "https://8c6b1832-9804-49a9-9a07-fa7a0fb29fa6.lovableproject.com"]
-    if origin in allowed_origins:
-        response.headers.add("Access-Control-Allow-Origin", origin)
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
     return response
 
 
@@ -49,7 +54,8 @@ def lumenai():
 
         # Add CORS header to POST response
         origin = request.headers.get("Origin")
-        response.headers.add("Access-Control-Allow-Origin", origin)
+        if origin in ALLOWED_ORIGINS:
+            response.headers["Access-Control-Allow-Origin"] = origin
         return response
 
     except Exception as e:
