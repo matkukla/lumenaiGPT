@@ -5,10 +5,21 @@ from prompts import SYSTEM_PROMPT, FEW_SHOT_EXAMPLES
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {
-    "origins": "https://8c6b1832-9804-49a9-9a07-fa7a0fb29fa6.lovableproject.com",
+    "origins": ["https://lumen-ai.lovable.app","https://8c6b1832-9804-49a9-9a07-fa7a0fb29fa6.lovableproject.com"],
     "methods": ["POST", "OPTIONS"],
     "allow_headers": ["Content-Type"]
 }})
+
+@app.after_request
+def add_cors_headers(response):
+    """
+    Dynamically add CORS headers to the response.
+    """
+    origin = request.headers.get("Origin")
+    allowed_origins = ["https://lumen-ai.lovable.app", "https://8c6b1832-9804-49a9-9a07-fa7a0fb29fa6.lovableproject.com"]
+    if origin in allowed_origins:
+        response.headers.add("Access-Control-Allow-Origin", origin)
+    return response
 
 
 @app.route("/api/lumenai", methods=["POST", "OPTIONS"])
@@ -19,7 +30,7 @@ def lumenai():
     if request.method == "OPTIONS":
         # Respond to preflight request
         response = jsonify({"message": "Preflight request accepted"})
-        response.headers.add("Access-Control-Allow-Origin", "https://8c6b1832-9804-49a9-9a07-fa7a0fb29fa6.lovableproject.com")
+        response.headers.add("Access-Control-Allow-Origin", request.headers.get("Origin"))
         response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type")
         return response
@@ -37,7 +48,8 @@ def lumenai():
         response = jsonify({"response": bot_response})
 
         # Add CORS header to POST response
-        response.headers.add("Access-Control-Allow-Origin", "https://8c6b1832-9804-49a9-9a07-fa7a0fb29fa6.lovableproject.com")
+        origin = request.headers.get("Origin")
+        response.headers.add("Access-Control-Allow-Origin", origin)
         return response
 
     except Exception as e:
